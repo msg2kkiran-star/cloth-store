@@ -1,4 +1,4 @@
-package com.clothstore.ClothStoreApplication;
+package com.clothstore;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ClothStoreApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ClothStoreApplication.class, args);
-	}
 
+		SpringApplication.run(ClothStoreApplication.class, args);
+		System.out.println("Cloth Store Application Started");
+	}
 }
