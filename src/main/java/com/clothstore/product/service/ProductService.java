@@ -1,12 +1,14 @@
 package com.clothstore.product.service;
 
 import com.clothstore.exception.ResourceNotFoundException;
+import com.clothstore.product.dto.ProductRequest;
+import com.clothstore.product.dto.ProductResponse;
 import com.clothstore.product.entity.Product;
 import com.clothstore.product.repository.ProductRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -16,19 +18,36 @@ public class ProductService {
         this.productRepo = productRepo;
     }
 
-    public Product addProduct(Product product) {
-        return productRepo.save(product);
+    public ProductResponse addProduct(ProductRequest product) {
+
+        Product productEntity = new Product();
+
+        productEntity.setName(product.getName());
+        productEntity.setDescription(product.getDescription());
+        productEntity.setActive(true);
+
+        return convertToProductResponse(productRepo.save(productEntity));
     }
 
-    public List<Product> getAllProducts() {
-        return productRepo.findAllByActiveTrue();
+    public List<ProductResponse> getAllProducts() {
+
+        List<Product> productList = productRepo.findAllByActiveTrue();
+
+        return convertToProductResponse(productList);
     }
 
-    public Optional<Product> getProductById(Long id) {
-        return productRepo.findByIdAndActiveTrue(id);
+    public ProductResponse getProductById(Long id) {
+
+        Product existingProduct = productRepo.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product not found with id: " + id
+                ));
+
+        return convertToProductResponse(existingProduct);
     }
 
-    public Product updateProduct(Long id, Product product) {
+    public ProductResponse updateProduct(Long id, ProductRequest product) {
+
         Product existingProduct = productRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Product not found with id: " + id
@@ -36,14 +55,12 @@ public class ProductService {
 
         existingProduct.setName(product.getName());
         existingProduct.setDescription(product.getDescription());
-        existingProduct.setActive(product.isActive());
 
-        productRepo.save(existingProduct);
-
-        return existingProduct;
+        return convertToProductResponse(productRepo.save(existingProduct));
     }
 
-    public Product deleteProduct(Long id) {
+    public ProductResponse deleteProduct(Long id) {
+
         Product existingProduct = productRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Product not found with id: " + id
@@ -51,6 +68,28 @@ public class ProductService {
 
         existingProduct.setActive(false);
 
-        return productRepo.save(existingProduct);
+        return convertToProductResponse(productRepo.save(existingProduct));
+    }
+
+    private ProductResponse convertToProductResponse(Product product) {
+
+        ProductResponse response = new ProductResponse();
+
+        response.setId(product.getId());
+        response.setName(product.getName());
+        response.setDescription(product.getDescription());
+        response.setActive(product.isActive());
+        response.setCreatedDate(product.getCreatedDate());
+        response.setUpdatedDate(product.getUpdatedDate());
+
+        return response;
+    }
+
+    private List<ProductResponse> convertToProductResponse(List<Product> productList) {
+        List<ProductResponse> productResponses = new ArrayList<>();
+        for (Product product : productList) {
+            productResponses.add(convertToProductResponse(product));
+        }
+        return productResponses;
     }
 }
