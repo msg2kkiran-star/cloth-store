@@ -40,4 +40,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<APIErrorResponse> handleDuplicateResourceException(
+            DuplicateResourceException e) {
+
+        APIErrorResponse response = new APIErrorResponse();
+        response.setStatus(HttpStatus.CONFLICT.value());
+        response.setMessage(e.getMessage());
+        response.setErrors(null);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
 }

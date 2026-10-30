@@ -1,10 +1,14 @@
 package com.clothstore.product.entity;
 
 public enum ProductColor {
-    R("Red"),
-    G("Green"),
-    B("Blue"),
-    Y("Yellow");
+    RED("Red"),
+    GREEN("Green"),
+    BLUE("Blue"),
+    YELLOW("Yellow"),
+    BLACK("Black"),
+    WHITE("White"),
+    NAVY("Navy"),
+    GREY("Grey");
 
     private final String displayName;
 

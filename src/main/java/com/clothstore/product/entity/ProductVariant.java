@@ -1,8 +1,10 @@
 package com.clothstore.product.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,7 +33,7 @@ public class ProductVariant {
     @Column(nullable = false)
     private ProductColor productColor;
 
-    @Column(nullable = false)
+    @Column(nullable = false,precision=10,scale=2)
     @Positive
     private BigDecimal price;
 
@@ -44,7 +46,12 @@ public class ProductVariant {
             nullable = false,
             length = 50
     )
+    @NotBlank
+    @Size(max = 50)
     private String sku;
+
+    @Column(nullable = false)
+    private boolean active = true;
 
     @PrePersist
     @PreUpdate

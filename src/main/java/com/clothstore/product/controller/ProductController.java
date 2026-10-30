@@ -1,7 +1,7 @@
 package com.clothstore.product.controller;
 
-import com.clothstore.exception.ResourceNotFoundException;
-import com.clothstore.product.entity.Product;
+import com.clothstore.product.dto.ProductRequest;
+import com.clothstore.product.dto.ProductResponse;
 import com.clothstore.product.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,36 +20,29 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> addProduct(@Valid @RequestBody Product product) {
+    public ResponseEntity<ProductResponse> addProduct(@Valid @RequestBody ProductRequest product) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.addProduct(product));
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProducts());
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable long id) {
-        Product product = productService.getProductById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Product not found with id: " + id
-                ));
-
-        return ResponseEntity.ok(product);
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getProductById(id));
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable long id, @Valid @RequestBody Product product) {
-        Product updatedProduct = productService.updateProduct(id, product);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable long id, @Valid @RequestBody ProductRequest product) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, product));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Product> deleteProduct(@PathVariable long id) {
-        Product deletedProduct = productService.deleteProduct(id);
-        return ResponseEntity.status(HttpStatus.OK).body(deletedProduct);
+    public ResponseEntity<ProductResponse> deleteProduct(@PathVariable long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.deleteProduct(id));
     }
 }
