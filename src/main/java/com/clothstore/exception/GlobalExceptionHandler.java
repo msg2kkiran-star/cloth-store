@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<APIErrorResponse> handleDuplicateResourceException(
+    public ResponseEntity<APIErrorResponse> handleDuplicateResource(
             DuplicateResourceException e) {
 
         APIErrorResponse response = new APIErrorResponse();
