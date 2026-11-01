@@ -3,6 +3,7 @@ package com.clothstore.cart.entity;
 
 import com.clothstore.customer.entity.Customer;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,6 +32,8 @@ public class Cart {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+
+    @Setter(AccessLevel.NONE)
     private List<CartItem> items = new ArrayList<>();
 
     @Column(nullable = false)
@@ -54,5 +57,18 @@ public class Cart {
 
     public void addItem(CartItem item) {
         this.items.add(item);
+        item.setCart(this);
+    }
+
+    public void removeItem(CartItem item) {
+        this.items.remove(item);
+        item.setCart(null);
+    }
+
+    public void removeAllItems() {
+        for (CartItem item : items) {
+            item.setCart(null);
+        }
+        this.items.clear();
     }
 }
