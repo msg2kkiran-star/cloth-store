@@ -151,4 +151,62 @@ public class CartService {
 
         return cartItemResponse;
     }
+
+    public CartResponse updateCartItemQuantity(Long customerId, Long itemId, Integer quantity) {
+
+        customerRepo.findByIdAndActiveTrue(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+
+        Optional<Cart> existingCart = cartRepo.findByCustomerIdAndActiveTrue(customerId);
+
+        if (existingCart.isPresent()) {
+            Optional<CartItem> itemToUpdate = cartItemRepo.findByIdAndCartId(itemId, existingCart.get().getId());
+            if (itemToUpdate.isPresent()) {
+                ProductVariant productVariant = itemToUpdate.get().getProductVariant();
+
+                productVariantRepo.findByIdAndActiveTrue(productVariant.getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Product variant not found with id: " + productVariant.getId()));
+
+                productRepo.findByIdAndActiveTrue(productVariant.getProduct().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productVariant.getProduct().getId()));
+
+                if (quantity != null && quantity <= productVariant.getStockQuantity()) {
+                    itemToUpdate.get().setQuantity(quantity);
+                    cartItemRepo.save(itemToUpdate.get());
+                    return convertToCartResponse(existingCart.get(), customerId);
+                } else {
+                    throw new ResourceNotFoundException("Extremely sorry we have only " + productVariant.getStockQuantity() + " stock products");
+                }
+            } else {
+                throw new ResourceNotFoundException("Provided Item not found in cart id: " + existingCart.get().getId());
+            }
+        } else {
+            throw new ResourceNotFoundException("Active cart not found for customer id: " + customerId);
+        }
+    }
+
+    public void deleteCartItem(Long customerId, Long itemId) {
+        customerRepo.findByIdAndActiveTrue(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+
+        Optional<Cart> existingCart = cartRepo.findByCustomerIdAndActiveTrue(customerId);
+        if (existingCart.isPresent()) {
+            Optional<CartItem> itemToDelete = cartItemRepo.findByIdAndCartId(itemId, existingCart.get().getId());
+            if (itemToDelete.isPresent()) {
+//                cartItemRepo.delete(itemToDelete.get());
+                existingCart.get().removeItem(itemToDelete.get());
+            } else
+                throw new ResourceNotFoundException("Provided Item not found in cart id: " + existingCart.get().getId());
+        } else throw new ResourceNotFoundException("Active cart not found for customer: " + customerId);
+    }
+
+    public void clearCart(Long customerId) {
+        customerRepo.findByIdAndActiveTrue(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+
+        Optional<Cart> existingCart = cartRepo.findByCustomerIdAndActiveTrue(customerId);
+        if (existingCart.isPresent()) {
+            existingCart.get().removeAllItems();
+        } else throw new ResourceNotFoundException("Active cart not found for customer: " + customerId);
+    }
 }
