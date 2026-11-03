@@ -52,4 +52,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<APIErrorResponse> handleBadRequestException(BadRequestException e) {
+
+        APIErrorResponse response = new APIErrorResponse();
+        response.setStatus(HttpStatus.CONFLICT.value());
+        response.setMessage(e.getMessage());
+        response.setErrors(null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }
