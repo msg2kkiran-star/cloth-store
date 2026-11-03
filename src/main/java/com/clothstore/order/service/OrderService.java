@@ -22,13 +22,11 @@ import com.clothstore.product.repository.ProductVariantRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.desktop.OpenFilesEvent;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -195,5 +193,11 @@ public class OrderService {
             orderResponseList.add(prepareOrderResponse(order));
         }
         return orderResponseList;
+    }
+
+    public OrderResponse getOrderById(Long orderId, Long customerId) {
+        Order order = orderRepo.findByIdAndCustomerId(orderId, customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order id : " + orderId + " not found!" + "for CustomerId: " + customerId));
+        return prepareOrderResponse(order);
     }
 }
