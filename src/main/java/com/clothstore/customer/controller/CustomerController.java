@@ -1,6 +1,7 @@
 
 package com.clothstore.customer.controller;
 
+import com.clothstore.customer.dto.CustomerRegistrationRequest;
 import com.clothstore.customer.dto.CustomerRequest;
 import com.clothstore.customer.dto.CustomerResponse;
 import com.clothstore.customer.service.CustomerService;
@@ -26,7 +27,7 @@ public class CustomerController {
     // Create customer
     @PostMapping
     public ResponseEntity<CustomerResponse> create(
-            @Valid @RequestBody CustomerRequest request) {
+            @Valid @RequestBody CustomerRegistrationRequest request) {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(customerService.createCustomer(request));

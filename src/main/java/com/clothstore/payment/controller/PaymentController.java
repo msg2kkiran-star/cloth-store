@@ -6,10 +6,12 @@ import com.clothstore.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/customers/{customerId}/orders/{orderId}/payments")
+@PreAuthorize("@customerAuthorization.canAccessCustomer(#p0, authentication)")
 public class PaymentController {
     private final PaymentService paymentService;
 

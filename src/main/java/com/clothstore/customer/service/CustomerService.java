@@ -1,6 +1,7 @@
 
 package com.clothstore.customer.service;
 
+import com.clothstore.customer.dto.CustomerRegistrationRequest;
 import com.clothstore.customer.dto.CustomerRequest;
 import com.clothstore.customer.dto.CustomerResponse;
 import com.clothstore.customer.entity.Customer;
@@ -8,6 +9,7 @@ import com.clothstore.customer.repository.CustomerRepo;
 import com.clothstore.exception.DuplicateResourceException;
 import com.clothstore.exception.ResourceNotFoundException;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +22,19 @@ import java.util.Locale;
 public class CustomerService {
 
     private final CustomerRepo customerRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public CustomerService(CustomerRepo customerRepo) {
+    public CustomerService(
+            CustomerRepo customerRepo,
+            PasswordEncoder passwordEncoder) {
+
         this.customerRepo = customerRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // Create customer
-    public CustomerResponse createCustomer(CustomerRequest request) {
+    public CustomerResponse createCustomer(
+            CustomerRegistrationRequest request) {
 
         String email = normalizeEmail(request.getEmail());
 
@@ -42,6 +50,11 @@ public class CustomerService {
         customer.setLastName(request.getLastName().trim());
         customer.setEmail(email);
         customer.setPhoneNumber(request.getPhoneNumber().trim());
+
+        // Encode password before saving
+        customer.setPassword(
+                passwordEncoder.encode(request.getPassword())
+        );
 
         return convertToResponse(customerRepo.save(customer));
     }
