@@ -4,6 +4,7 @@ import com.clothstore.product.dto.ProductRequest;
 import com.clothstore.product.dto.ProductResponse;
 import com.clothstore.product.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +45,16 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ProductResponse> deleteProduct(@PathVariable long id) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.deleteProduct(id));
+    }
+
+    @GetMapping("/paging")
+    public ResponseEntity<Page<ProductResponse>> getAllProductsWithPaging(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(productService.getAllProductsWithPaging(page, size));
+    }
+
+    @GetMapping("/searchedpaging")
+
+    public ResponseEntity<Page<ProductResponse>> getAllProductsWithSearchedPaging(@RequestParam String searchString, @RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(productService.getProductsByNameContainingIgnoreCase(searchString,page,size));
     }
 }
