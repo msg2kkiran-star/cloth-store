@@ -5,6 +5,10 @@ import com.clothstore.product.dto.ProductRequest;
 import com.clothstore.product.dto.ProductResponse;
 import com.clothstore.product.entity.Product;
 import com.clothstore.product.repository.ProductRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,6 +38,15 @@ public class ProductService {
         List<Product> productList = productRepo.findAllByActiveTrue();
 
         return convertToProductResponse(productList);
+    }
+
+    public Page<ProductResponse> getAllProductsWithPaging(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "name"));
+
+        Page<Product> productPage = productRepo.findAllByActiveTrue(pageable);
+
+        return productPage.map(this::convertToProductResponse);
     }
 
     public ProductResponse getProductById(Long id) {
@@ -91,5 +104,11 @@ public class ProductService {
             productResponses.add(convertToProductResponse(product));
         }
         return productResponses;
+    }
+
+    public Page<ProductResponse> getProductsByNameContainingIgnoreCase(String name, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "name"));
+        Page<Product> products = productRepo.findByNameContainingIgnoreCaseAndActiveTrue(name, pageable);
+        return products.map(this::convertToProductResponse);
     }
 }

@@ -1,6 +1,7 @@
 
 package com.clothstore.customer.dto;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -27,4 +28,8 @@ public class CustomerRequest {
     @NotBlank
     @Size(max = 20)
     private String phoneNumber;
+
+@NotBlank
+@Size(min =  8, max = 100)
+    private String password;
 }
