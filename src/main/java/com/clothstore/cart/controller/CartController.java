@@ -7,10 +7,12 @@ import com.clothstore.cart.service.CartService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/customers/{customerId}/cart")
+@PreAuthorize("@customerAuthorization.canAccessCustomer(#p0, authentication)")
 public class CartController {
     private final CartService cartService;
 

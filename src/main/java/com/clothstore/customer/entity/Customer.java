@@ -50,6 +50,9 @@ public class Customer {
 
     private LocalDateTime updatedDate;
 
+    @Column(nullable = false, length = 100)
+    private String password;
+
     @PrePersist
     public void onCreate() {
         LocalDateTime now = LocalDateTime.now();
