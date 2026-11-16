@@ -1,0 +1,35 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION_NAME: ap-southeast-2
+    AWS_ACCOUNT_ID: "355827190717"
+    ECR_REPOSITORY: cloth-store
+
+phases:
+  pre_build:
+    commands:
+      - |
+        cat > Dockerfile <<'EOF'
+        FROM maven:3.9-eclipse-temurin-21 AS build
+        WORKDIR /app
+        COPY pom.xml .
+        COPY src ./src
+        RUN mvn -B -DskipTests package
+
+        FROM eclipse-temurin:21-jre
+        WORKDIR /app
+        COPY --from=build /app/target/*.jar app.jar
+        EXPOSE 8080
+        ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+        EOF
+      - aws ecr get-login-password --region "$AWS_REGION_NAME" | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION_NAME.amazonaws.com"
+
+  build:
+    commands:
+      - docker build -t "$ECR_REPOSITORY:latest" .
+      - docker tag "$ECR_REPOSITORY:latest" "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION_NAME.amazonaws.com/$ECR_REPOSITORY:latest"
+
+  post_build:
+    commands:
+      - docker push "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION_NAME.amazonaws.com/$ECR_REPOSITORY:latest"
